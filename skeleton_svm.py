@@ -94,12 +94,14 @@ def linear_accuracy_per_C(X_train, y_train, X_val, y_val):
             max_acc = accuracy
             best_C = C
         accuracies[i] = accuracy
-    plt.plot(Cs, accuracies, color='blue')
-    plt.scatter(best_C, max_acc, color='red')
-    plt.title('Accuracy as function of C')
-    plt.ylabel('Accuracy')
-    plt.xlabel('C')
-    plt.xscale('log')
+        create_plot(X_val,y_val,linear)
+        plt.show()
+    # plt.plot(Cs, accuracies, color='blue')
+    # plt.scatter(best_C, max_acc, color='red')
+    # plt.title('Accuracy as function of C')
+    # plt.ylabel('Accuracy')
+    # plt.xlabel('C')
+    # plt.xscale('log')
     plt.show()
     return accuracies
 
@@ -120,12 +122,14 @@ def rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val):
             max_acc = accuracy
             best_gamma = gamma
         accuracies[i] = accuracy
-    plt.plot(gammas, accuracies, color='blue')
-    plt.scatter(best_gamma, max_acc, color='red')
-    plt.title('Accuracy as function of gamma')
-    plt.ylabel('Accuracy')
-    plt.xlabel('gamma')
-    plt.xscale('log')
+        create_plot(X_train, y_train, rbf)
+        plt.show()
+    # plt.plot(gammas, accuracies, color='blue')
+    # plt.scatter(best_gamma, max_acc, color='red')
+    # plt.title('Accuracy as function of gamma')
+    # plt.ylabel('Accuracy')
+    # plt.xlabel('gamma')
+    # plt.xscale('log')
     plt.show()
     return accuracies
 
@@ -133,4 +137,6 @@ def rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val):
 
 if __name__ == '__main__':
     X_train, y_train, X_val, y_val = get_points()
-    print(rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val))
+    linear_accuracy_per_C(X_train, y_train,X_val,y_val)
+    # print(rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val))
+    # print(X_train.var())
