@@ -1,5 +1,5 @@
 #################################
-# Your name:
+# Your name: Jonathan Zeltser
 #################################
 
 # Please import and use stuff only from the packages numpy, sklearn, matplotlib
@@ -45,25 +45,92 @@ def create_plot(X, y, clf):
                linestyles=['--', '-', '--'])
 
 
+def init_classifiers(C, X_train, y_train):
+
+    linear = svm.SVC(C, kernel='linear')
+    linear.fit(X_train, y_train)
+
+    quad = svm.SVC(C, kernel='poly', degree=2)
+    quad.fit(X_train, y_train)
+
+    rbf = svm.SVC(C, kernel='rbf')
+    rbf.fit(X_train, y_train)
+    return linear, quad, rbf
+
+
+def create_three_plots(X_train, y_train,  linear, quad, rbf):
+
+    names = ['Linear', 'Quadratic', 'RBF']
+    clfs = [linear, quad, rbf]
+    for i, name in enumerate(names):
+        create_plot(X_train, y_train, clfs[i])
+        plt.show()
+
+
 def train_three_kernels(X_train, y_train, X_val, y_val):
     """
     Returns: np.ndarray of shape (3,2) :
                 A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
     """
-    # TODO: add your code here
-
+    C = 1000
+    linear, quad, rbf = init_classifiers(C, X_train, y_train)
+    create_three_plots(X_train, y_train, linear, quad, rbf)
+    return np.vstack([linear.n_support_, quad.n_support_, rbf.n_support_])
 
 def linear_accuracy_per_C(X_train, y_train, X_val, y_val):
     """
         Returns: np.ndarray of shape (11,) :
                     An array that contains the accuracy of the resulting model on the VALIDATION set.
     """
-    # TODO: add your code here
-
+    accuracies = np.empty(11)
+    Cs = [10**i for i in range(-5, 6)]
+    best_C = 0
+    max_acc = 0
+    for i, C in enumerate(Cs):
+        linear = svm.SVC(C, kernel='linear')
+        linear.fit(X_train, y_train)
+        accuracy = linear.score(X_val, y_val)
+        if accuracy > max_acc:
+            max_acc = accuracy
+            best_C = C
+        accuracies[i] = accuracy
+    plt.plot(Cs, accuracies, color='blue')
+    plt.scatter(best_C, max_acc, color='red')
+    plt.title('Accuracy as function of C')
+    plt.ylabel('Accuracy')
+    plt.xlabel('C')
+    plt.xscale('log')
+    plt.show()
+    return accuracies
 
 def rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val):
     """
         Returns: np.ndarray of shape (11,) :
                     An array that contains the accuracy of the resulting model on the VALIDATION set.
     """
-    # TODO: add your code here
+    accuracies = np.empty(11)
+    gammas = [10 ** i for i in range(-5, 6)]
+    best_gamma = 0
+    max_acc = 0
+    for i, gamma in enumerate(gammas):
+        rbf = svm.SVC(C=10, kernel='rbf', gamma=gamma)
+        rbf.fit(X_train, y_train)
+        accuracy = rbf.score(X_val, y_val)
+        if accuracy > max_acc:
+            max_acc = accuracy
+            best_gamma = gamma
+        accuracies[i] = accuracy
+    plt.plot(gammas, accuracies, color='blue')
+    plt.scatter(best_gamma, max_acc, color='red')
+    plt.title('Accuracy as function of gamma')
+    plt.ylabel('Accuracy')
+    plt.xlabel('gamma')
+    plt.xscale('log')
+    plt.show()
+    return accuracies
+
+
+
+if __name__ == '__main__':
+    X_train, y_train, X_val, y_val = get_points()
+    print(rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val))
