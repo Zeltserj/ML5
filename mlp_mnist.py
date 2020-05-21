@@ -57,7 +57,14 @@ class KerasMnist(object):
         the class variables input_dim, hidden_layer_dims and num_classes.
         '''
         ### YOUR CODE STARTS HERE
+        self.model = keras.Sequential()
 
+        for i, k in enumerate(self.hidden_layer_dims):
+            if i == 0:
+                self.model.add(Dense(k, input_dim=self.input_dim, activation='relu'))
+
+            self.model.add(Dense(k, input_dim=self.hidden_layer_dims[i - 1],activation='relu'))
+        self.model.add(Dense(self.num_classes, input_dim=self.hidden_layer_dims[-1],activation='softmax'))
         ### YOUR CODE ENDS HERE
 
         self.model.compile(loss='categorical_crossentropy',
@@ -76,7 +83,21 @@ class KerasMnist(object):
          1) Define the variable x as the input to the network.
          2) Define the variable out as the output of the network.
         '''
-        ### YOUR CODE STARTS HERE
+
+        x = Input(shape=(self.input_dim,))
+        tmp = Dense(self.hidden_layer_dims[0])(x)
+        next = tmp
+
+        Activation('relu')(next)
+        for i in range(1, len(self.hidden_layer_dims)):
+            if (i -1) % self.skips == 0 and i-1 != 0:
+                addition = keras.layers.add([tmp, next])
+                tmp = next
+                next = Dense(self.hidden_layer_dims[i], activation='relu')(addition)
+            else:
+                next = Dense(self.hidden_layer_dims[i], activation='relu')(next)
+            Activation('relu')(next)
+        out = Dense(self.num_classes, activation='softmax')(next)
 
         ### YOUR CODE ENDS HERE
 
@@ -100,7 +121,7 @@ class KerasMnist(object):
     @staticmethod
     def plot_curves(history, figpath):
         history_dict = history.history
-        for metric in ['loss', 'acc']:
+        for metric in ['loss', 'accuracy']:
             plt.clf()
             metric_values = history_dict[metric]
             val_metric_values = history_dict['val_' + metric]
