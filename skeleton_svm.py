@@ -95,6 +95,7 @@ def linear_accuracy_per_C(X_train, y_train, X_val, y_val):
             best_C = C
         accuracies[i] = accuracy
         create_plot(X_val,y_val,linear)
+        create_plot(X_train,y_train,linear)
         plt.show()
     # plt.plot(Cs, accuracies, color='blue')
     # plt.scatter(best_C, max_acc, color='red')
@@ -110,33 +111,36 @@ def rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val):
         Returns: np.ndarray of shape (11,) :
                     An array that contains the accuracy of the resulting model on the VALIDATION set.
     """
-    accuracies = np.empty(11)
+    val_accuracies = np.empty(11)
+    train_acc = np.empty(11)
     gammas = [10 ** i for i in range(-5, 6)]
     best_gamma = 0
     max_acc = 0
     for i, gamma in enumerate(gammas):
         rbf = svm.SVC(C=10, kernel='rbf', gamma=gamma)
         rbf.fit(X_train, y_train)
-        accuracy = rbf.score(X_val, y_val)
-        if accuracy > max_acc:
-            max_acc = accuracy
-            best_gamma = gamma
-        accuracies[i] = accuracy
-        create_plot(X_train, y_train, rbf)
-        plt.show()
-    # plt.plot(gammas, accuracies, color='blue')
+        accuracy_v = rbf.score(X_val, y_val)
+        accacy_t = rbf.score(X_train,y_train)
+        val_accuracies[i] = accuracy_v
+        train_acc[i] = accacy_t
+        # create_plot(X_train, y_train, rbf)
+        # plt.show()
+    plt.plot(gammas, val_accuracies, color='orange', label='Validation Set')
+    plt.plot(gammas, train_acc, color='blue', label='Training Set')
     # plt.scatter(best_gamma, max_acc, color='red')
-    # plt.title('Accuracy as function of gamma')
-    # plt.ylabel('Accuracy')
-    # plt.xlabel('gamma')
-    # plt.xscale('log')
+    plt.title('Accuracy as function of gamma')
+    plt.ylabel('Accuracy')
+    plt.xlabel('gamma')
+    plt.xscale('log')
+    plt.legend()
     plt.show()
-    return accuracies
+    return val_accuracies
 
 
 
 if __name__ == '__main__':
     X_train, y_train, X_val, y_val = get_points()
-    linear_accuracy_per_C(X_train, y_train,X_val,y_val)
-    # print(rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val))
+    # print(train_three_kernels(X_train,y_train,X_val,y_val))
+    # linear_accuracy_per_C(X_train, y_train,X_val,y_val)
+    print(rbf_accuracy_per_gamma(X_train, y_train, X_val, y_val))
     # print(X_train.var())

@@ -57,7 +57,7 @@ class KerasMnist(object):
         the class variables input_dim, hidden_layer_dims and num_classes.
         '''
         ### YOUR CODE STARTS HERE
-        self.model = keras.Sequential()
+        self.model = Sequential()
 
         for i, k in enumerate(self.hidden_layer_dims):
             if i == 0:
@@ -85,18 +85,18 @@ class KerasMnist(object):
         '''
 
         x = Input(shape=(self.input_dim,))
-        tmp = Dense(self.hidden_layer_dims[0])(x)
-        next = tmp
+        next = tmp = Dense(self.hidden_layer_dims[0])(x)
 
-        Activation('relu')(next)
+
+        # next = Activation('relu')(next)
         for i in range(1, len(self.hidden_layer_dims)):
             if (i -1) % self.skips == 0 and i-1 != 0:
-                addition = keras.layers.add([tmp, next])
+                addition = keras.layers.Add()([tmp, next])
                 tmp = next
                 next = Dense(self.hidden_layer_dims[i], activation='relu')(addition)
             else:
-                next = Dense(self.hidden_layer_dims[i], activation='relu')(next)
-            Activation('relu')(next)
+                next = Dense(self.hidden_layer_dims[i])(next)
+
         out = Dense(self.num_classes, activation='softmax')(next)
 
         ### YOUR CODE ENDS HERE
